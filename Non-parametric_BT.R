@@ -36,11 +36,18 @@ X <- as_adjacency_matrix(g, attr = "weight")%>%
 # Just do regular matrix completion ---------------------------------------
 
 X <- ifelse(X == 0, NA, X)
+# make X skew symmetric
+X <- (X - 0.5) * 2
 # USVT suggested taking six singular values so let's try that as rank
 set.seed(123)
-sv <- softImpute(X, rank.max = 6, lambda = 1, maxit = 1000)
 lambda0(X)
+sv <- softImpute(X, rank.max = 6, lambda = 1, maxit = 1000)
 M_hat <- complete(X, sv)
+min(M_hat); max(M_hat)
+# scale back
+M_hat <- M_hat * 0.5 + 0.5
+min(M_hat); max(M_hat)
+max(abs(M_hat + t(M_hat) - 1))
 # symmetrize so that p_ij = 1 - p_ji
 R <- M_hat + t(M_hat)
 M_final <- ifelse(M_hat == 0, M_hat, M_hat / R)
@@ -48,7 +55,20 @@ M_final <- ifelse(M_hat == 0, M_hat, M_hat / R)
 ranks <- M_final%>%rowSums()%>%as.data.frame()%>%
   rownames_to_column()%>%
   setNames(c("country", "strength"))%>%
-  arrange(desc(strength))
+  mutate(BT_rank = rank(desc(strength)))%>%
+  arrange(BT_rank)%>%
+  left_join(
+    as_adjacency_matrix(g, attr = "weight")%>%
+      as.matrix()%>%
+      rowSums()%>%
+      as.data.frame()%>%
+      rownames_to_column()%>%
+      setNames(c("country", "group_strength"))%>%
+      mutate(group_rank = rank(desc(group_strength))),
+    by = "country"
+  )%>%
+  select(country, BT_rank, group_rank, everything())
+  
 
 
 ########### THIS PART FAILED
