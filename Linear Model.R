@@ -38,12 +38,15 @@ df
 
 # Fit linear model ---------------------------------------
 
-lm_fit <- lm(logit_p_ij ~ X, data = df)
+lm_fit <- lm(logit_p_ij ~ X - 1, data = df) # intercept or no?
 
 summary(lm_fit)
 
 r <- coef(lm_fit)
 r[is.na(r)] <- 0
+r
 
-
-
+probs <- matrix(nrow = nrow(df$X), ncol = ncol(df$X))
+probs[] <- plogis(r[row(df$X)] - r[col(df$X)])
+dimnames(probs) <- list(i = rownames(df$X), j = colnames(df$X))
+probs
