@@ -149,7 +149,7 @@ names(lambda_G) <- c("O", "A", "B", "C", "D", "E", "F")
 Get the team coefficients $\lambda_i = r_i - \lambda_{G(i)}$
 
 ```{r}
-lambda <- setNames(r - lambda_G[winner$Group], winner$TeamName)
+lambda <- setNames(winner$r - lambda_G[winner$Group], winner$TeamName)
 lambda
 ```
 
