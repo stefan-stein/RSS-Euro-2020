@@ -129,9 +129,9 @@ winner <- read_csv("Winner.csv")%>%
 y <- winner$r - qlogis(winner$q_io)
 
 X <- matrix(0,
-               nrow(winner),
-               length(levels(factor(as.character(winner$Group)))))
-colnames(X) <- levels(factor(as.character(winner$Group)))
+            nrow(winner),
+            length(unique(winner$Group)))
+colnames(X) <- sort(unique(winner$Group))
 rownames(X) <- winner$TeamName
 for (group in colnames(X)) {
   X[winner$Group == group, group] <- 1
@@ -142,8 +142,8 @@ lmfit_win <- lm(y ~ X)
 
 lambda_G <- coef(lmfit_win)
 lambda_G[is.na(lambda_G)] <- 0
-lambda_G
 names(lambda_G) <- c("O", "A", "B", "C", "D", "E", "F")
+lambda_G
 ```
 
 Get the team coefficients $\lambda_i = r_i - \lambda_{G(i)}$
