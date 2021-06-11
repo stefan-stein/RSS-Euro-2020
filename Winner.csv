@@ -1,25 +1,25 @@
-Group,TeamName,Odds,,,,,,,,
-F,France,5.9,,,,,,,,
-D,England,8.06,,,,,,,,
-B,Belgium,8.5,,,,,,,,
-A,Italy,9.4,,,,,,,,
-F,Germany,10,,,,,,,,
-F,Portugal,10,,,,,,,,
-E,Spain,10,,,,,,,,
-C,Netherlands,20,,,,,,,,
-B,Denmark,29,,,,,,,,
-D,Croatia,48,,,,,,,,
-A,Turkey,67,,,,,,,,
-A,Switzerland,76,,,,,,,,
-E,Poland,81,,,,,,,,
-C,Ukraine,101,,,,,,,,
-E,Sweden,120,,,,,,,,
-B,Russia,130,,,,,,,,
-D,Czech Republic,151,,,,,,,,
-C,Austria,151,,,,,,,,
-A,Wales,201,,,,,,,,
-D,Scotland,401,,,,,,,,
-B,Finland,501,,,,,,,,
-F,Hungary,785,,,,,,,,
-C,North Macedonia,501,,,,,,,,
-E,Slovakia,785,,,,,,,,
+Group,TeamName,Odds
+F,France,5.9
+D,England,8.06
+B,Belgium,8.5
+A,Italy,9.4
+F,Germany,10
+F,Portugal,10
+E,Spain,10
+C,Netherlands,20
+B,Denmark,29
+D,Croatia,48
+A,Turkey,67
+A,Switzerland,76
+E,Poland,81
+C,Ukraine,101
+E,Sweden,120
+B,Russia,130
+D,Czech Republic,151
+C,Austria,151
+A,Wales,201
+D,Scotland,401
+B,Finland,501
+F,Hungary,785
+C,North Macedonia,501
+E,Slovakia,785
