@@ -919,20 +919,22 @@ probs</code></pre>
                           team2_name = TeamName2,
                           p_team1_win = p_ij,
                           p_team2_win = p_ji,
-                          p_draw)) %&gt;%
-  left_join(df %&gt;% select(Group,
-                          team1_name = TeamName2,
-                          team2_name = TeamName1,
-                          p_team1_win = p_ji,
-                          p_team2_win = p_ij)) %&gt;%
-  filter(Group == &#39;Knockout&#39; | !is.na(p_draw)) %&gt;%
+                          p_draw) %&gt;%
+              bind_rows(df %&gt;%
+                          select(Group,
+                                 team1_name = TeamName2,
+                                 team2_name = TeamName1,
+                                 p_team1_win = p_ji,
+                                 p_team2_win = p_ij,
+                                 p_draw))
+            ) %&gt;%
+  # Predict knockout stage
   mutate(p_team1_win = ifelse(Group == &#39;Knockout&#39;,
                               plogis(lambda[team1_name] - lambda[team2_name]),
                               p_team1_win),
          p_team2_win = ifelse(Group == &#39;Knockout&#39;,
                               plogis(lambda[team2_name] - lambda[team1_name]),
-                              p_team2_win),
-         p_draw = ifelse(Group == &#39;Knockout&#39;, 0, p_draw))
+                              p_team2_win))
 # write.csv(output, &#39;output.csv&#39;)
 output</code></pre>
 <div class="kable-table">
@@ -957,12 +959,44 @@ output</code></pre>
 <td align="right">0.2482538</td>
 </tr>
 <tr class="even">
+<td align="left">Wales</td>
+<td align="left">Italy</td>
+<td align="left">A</td>
+<td align="right">0.1315989</td>
+<td align="right">0.6429799</td>
+<td align="right">0.2254212</td>
+</tr>
+<tr class="odd">
+<td align="left">Switzerland</td>
+<td align="left">Italy</td>
+<td align="left">A</td>
+<td align="right">0.1795666</td>
+<td align="right">0.5510836</td>
+<td align="right">0.2693498</td>
+</tr>
+<tr class="even">
+<td align="left">Wales</td>
+<td align="left">Turkey</td>
+<td align="left">A</td>
+<td align="right">0.2738910</td>
+<td align="right">0.4179815</td>
+<td align="right">0.3081274</td>
+</tr>
+<tr class="odd">
 <td align="left">Switzerland</td>
 <td align="left">Turkey</td>
 <td align="left">A</td>
 <td align="right">0.3997655</td>
 <td align="right">0.3094959</td>
 <td align="right">0.2907386</td>
+</tr>
+<tr class="even">
+<td align="left">Switzerland</td>
+<td align="left">Wales</td>
+<td align="left">A</td>
+<td align="right">0.4388087</td>
+<td align="right">0.2442739</td>
+<td align="right">0.3169174</td>
 </tr>
 <tr class="odd">
 <td align="left">Denmark</td>
@@ -973,6 +1007,14 @@ output</code></pre>
 <td align="right">0.2866915</td>
 </tr>
 <tr class="even">
+<td align="left">Russia</td>
+<td align="left">Belgium</td>
+<td align="left">B</td>
+<td align="right">0.1805850</td>
+<td align="right">0.5573227</td>
+<td align="right">0.2620923</td>
+</tr>
+<tr class="odd">
 <td align="left">Finland</td>
 <td align="left">Belgium</td>
 <td align="left">B</td>
@@ -980,13 +1022,21 @@ output</code></pre>
 <td align="right">0.7778628</td>
 <td align="right">0.1501996</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Russia</td>
 <td align="left">Denmark</td>
 <td align="left">B</td>
 <td align="right">0.2333206</td>
 <td align="right">0.4904493</td>
 <td align="right">0.2762301</td>
+</tr>
+<tr class="odd">
+<td align="left">Finland</td>
+<td align="left">Denmark</td>
+<td align="left">B</td>
+<td align="right">0.1065975</td>
+<td align="right">0.6629488</td>
+<td align="right">0.2304536</td>
 </tr>
 <tr class="even">
 <td align="left">Finland</td>
@@ -997,12 +1047,60 @@ output</code></pre>
 <td align="right">0.2569726</td>
 </tr>
 <tr class="odd">
+<td align="left">Ukraine</td>
+<td align="left">Netherlands</td>
+<td align="left">C</td>
+<td align="right">0.1584710</td>
+<td align="right">0.5788461</td>
+<td align="right">0.2626829</td>
+</tr>
+<tr class="even">
+<td align="left">Austria</td>
+<td align="left">Netherlands</td>
+<td align="left">C</td>
+<td align="right">0.1611107</td>
+<td align="right">0.5964097</td>
+<td align="right">0.2424797</td>
+</tr>
+<tr class="odd">
 <td align="left">North Macedonia</td>
 <td align="left">Netherlands</td>
 <td align="left">C</td>
 <td align="right">0.0599753</td>
 <td align="right">0.7885280</td>
 <td align="right">0.1514967</td>
+</tr>
+<tr class="even">
+<td align="left">Austria</td>
+<td align="left">Ukraine</td>
+<td align="left">C</td>
+<td align="right">0.3534701</td>
+<td align="right">0.3508806</td>
+<td align="right">0.2956494</td>
+</tr>
+<tr class="odd">
+<td align="left">North Macedonia</td>
+<td align="left">Ukraine</td>
+<td align="left">C</td>
+<td align="right">0.1489015</td>
+<td align="right">0.5919294</td>
+<td align="right">0.2591691</td>
+</tr>
+<tr class="even">
+<td align="left">North Macedonia</td>
+<td align="left">Austria</td>
+<td align="left">C</td>
+<td align="right">0.1546540</td>
+<td align="right">0.5753496</td>
+<td align="right">0.2699965</td>
+</tr>
+<tr class="odd">
+<td align="left">Croatia</td>
+<td align="left">England</td>
+<td align="left">D</td>
+<td align="right">0.1675161</td>
+<td align="right">0.5763350</td>
+<td align="right">0.2561489</td>
 </tr>
 <tr class="even">
 <td align="left">Czech Republic</td>
@@ -1014,19 +1112,83 @@ output</code></pre>
 </tr>
 <tr class="odd">
 <td align="left">Scotland</td>
+<td align="left">England</td>
+<td align="left">D</td>
+<td align="right">0.1071392</td>
+<td align="right">0.6999240</td>
+<td align="right">0.1929368</td>
+</tr>
+<tr class="even">
+<td align="left">Czech Republic</td>
+<td align="left">Croatia</td>
+<td align="left">D</td>
+<td align="right">0.2725092</td>
+<td align="right">0.4333142</td>
+<td align="right">0.2941766</td>
+</tr>
+<tr class="odd">
+<td align="left">Scotland</td>
+<td align="left">Croatia</td>
+<td align="left">D</td>
+<td align="right">0.2302318</td>
+<td align="right">0.4848820</td>
+<td align="right">0.2848862</td>
+</tr>
+<tr class="even">
+<td align="left">Scotland</td>
 <td align="left">Czech Republic</td>
 <td align="left">D</td>
 <td align="right">0.3251174</td>
 <td align="right">0.3497653</td>
 <td align="right">0.3251174</td>
 </tr>
+<tr class="odd">
+<td align="left">Sweden</td>
+<td align="left">Spain</td>
+<td align="left">E</td>
+<td align="right">0.1211636</td>
+<td align="right">0.6560968</td>
+<td align="right">0.2227396</td>
+</tr>
 <tr class="even">
+<td align="left">Poland</td>
+<td align="left">Spain</td>
+<td align="left">E</td>
+<td align="right">0.1451042</td>
+<td align="right">0.6342304</td>
+<td align="right">0.2206654</td>
+</tr>
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Spain</td>
 <td align="left">E</td>
 <td align="right">0.0676518</td>
 <td align="right">0.7752678</td>
 <td align="right">0.1570804</td>
+</tr>
+<tr class="even">
+<td align="left">Poland</td>
+<td align="left">Sweden</td>
+<td align="left">E</td>
+<td align="right">0.3298744</td>
+<td align="right">0.3692056</td>
+<td align="right">0.3009199</td>
+</tr>
+<tr class="odd">
+<td align="left">Slovakia</td>
+<td align="left">Sweden</td>
+<td align="left">E</td>
+<td align="right">0.1938338</td>
+<td align="right">0.5214549</td>
+<td align="right">0.2847113</td>
+</tr>
+<tr class="even">
+<td align="left">Slovakia</td>
+<td align="left">Poland</td>
+<td align="left">E</td>
+<td align="right">0.1809865</td>
+<td align="right">0.5252543</td>
+<td align="right">0.2937592</td>
 </tr>
 <tr class="odd">
 <td align="left">France</td>
@@ -1045,6 +1207,14 @@ output</code></pre>
 <td align="right">0.2858757</td>
 </tr>
 <tr class="odd">
+<td align="left">Hungary</td>
+<td align="left">Germany</td>
+<td align="left">F</td>
+<td align="right">0.0825417</td>
+<td align="right">0.7618732</td>
+<td align="right">0.1555851</td>
+</tr>
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">France</td>
 <td align="left">F</td>
@@ -1052,7 +1222,7 @@ output</code></pre>
 <td align="right">0.3984579</td>
 <td align="right">0.2927693</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">France</td>
 <td align="left">F</td>
@@ -1060,7 +1230,7 @@ output</code></pre>
 <td align="right">0.6844591</td>
 <td align="right">0.2017353</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Portugal</td>
 <td align="left">F</td>
@@ -1068,2213 +1238,2213 @@ output</code></pre>
 <td align="right">0.6445147</td>
 <td align="right">0.2264103</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Turkey</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.1867919</td>
 <td align="right">0.8132081</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Wales</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.1488672</td>
 <td align="right">0.8511328</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Switzerland</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.2378120</td>
 <td align="right">0.7621880</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Belgium</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.5135222</td>
 <td align="right">0.4864778</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Denmark</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.3891574</td>
 <td align="right">0.6108426</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Russia</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.2418901</td>
 <td align="right">0.7581099</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Finland</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.0916604</td>
 <td align="right">0.9083396</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Netherlands</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.6927177</td>
 <td align="right">0.3072823</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Ukraine</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.3862845</td>
 <td align="right">0.6137155</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Austria</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.3824405</td>
 <td align="right">0.6175595</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">North Macedonia</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.1418742</td>
 <td align="right">0.8581258</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">England</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.4149055</td>
 <td align="right">0.5850945</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Croatia</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.1795934</td>
 <td align="right">0.8204066</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Czech Republic</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.1191450</td>
 <td align="right">0.8808550</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Scotland</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.1010112</td>
 <td align="right">0.8989888</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Spain</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.5100593</td>
 <td align="right">0.4899407</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.1813507</td>
 <td align="right">0.8186493</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.1837667</td>
 <td align="right">0.8162333</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.0769891</td>
 <td align="right">0.9230109</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.4217841</td>
 <td align="right">0.5782159</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.3990471</td>
 <td align="right">0.6009529</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.3356657</td>
 <td align="right">0.6643343</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Italy</td>
 <td align="left">Knockout</td>
 <td align="right">0.0875365</td>
 <td align="right">0.9124635</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Wales</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.4322882</td>
 <td align="right">0.5677118</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Switzerland</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.5759767</td>
 <td align="right">0.4240233</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Belgium</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.8212873</td>
 <td align="right">0.1787127</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Denmark</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.7349992</td>
 <td align="right">0.2650008</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Russia</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.5814301</td>
 <td align="right">0.4185699</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Finland</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.3052255</td>
 <td align="right">0.6947745</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Netherlands</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.9075304</td>
 <td align="right">0.0924696</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Ukraine</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.7326353</td>
 <td align="right">0.2673647</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Austria</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.7294412</td>
 <td align="right">0.2705588</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">North Macedonia</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.4185282</td>
 <td align="right">0.5814718</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">England</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.7553346</td>
 <td align="right">0.2446654</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Croatia</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.4879741</td>
 <td align="right">0.5120259</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Czech Republic</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.3706194</td>
 <td align="right">0.6293806</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Scotland</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.3284845</td>
 <td align="right">0.6715155</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Spain</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.8192441</td>
 <td align="right">0.1807559</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.4909431</td>
 <td align="right">0.5090569</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.4949898</td>
 <td align="right">0.5050102</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.2663961</td>
 <td align="right">0.7336039</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.7605210</td>
 <td align="right">0.2394790</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.7429875</td>
 <td align="right">0.2570125</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.6874709</td>
 <td align="right">0.3125291</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Turkey</td>
 <td align="left">Knockout</td>
 <td align="right">0.2946094</td>
 <td align="right">0.7053906</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Switzerland</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.6407913</td>
 <td align="right">0.3592087</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Belgium</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.8578584</td>
 <td align="right">0.1421416</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Denmark</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.7845967</td>
 <td align="right">0.2154033</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Russia</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.6459236</td>
 <td align="right">0.3540764</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Finland</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.3658610</td>
 <td align="right">0.6341390</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Netherlands</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.9280002</td>
 <td align="right">0.0719998</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Ukraine</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.7825444</td>
 <td align="right">0.2174556</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Austria</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.7797673</td>
 <td align="right">0.2202327</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">North Macedonia</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.4859296</td>
 <td align="right">0.5140704</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">England</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.8021507</td>
 <td align="right">0.1978493</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Croatia</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.5558679</td>
 <td align="right">0.4441321</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Czech Republic</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.4360918</td>
 <td align="right">0.5639082</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Scotland</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.3911393</td>
 <td align="right">0.6088607</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Spain</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.8561600</td>
 <td align="right">0.1438400</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Sweden</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.5587992</td>
 <td align="right">0.4412008</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Poland</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.5627869</td>
 <td align="right">0.4372131</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.3229028</td>
 <td align="right">0.6770972</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.8065988</td>
 <td align="right">0.1934012</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.7915140</td>
 <td align="right">0.2084860</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.7428517</td>
 <td align="right">0.2571483</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Wales</td>
 <td align="left">Knockout</td>
 <td align="right">0.3542111</td>
 <td align="right">0.6457889</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Belgium</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.7718549</td>
 <td align="right">0.2281451</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Denmark</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6712530</td>
 <td align="right">0.3287470</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Russia</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.5055918</td>
 <td align="right">0.4944082</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Finland</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.2443798</td>
 <td align="right">0.7556202</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Netherlands</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8784217</td>
 <td align="right">0.1215783</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Ukraine</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6685768</td>
 <td align="right">0.3314232</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Austria</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6649675</td>
 <td align="right">0.3350325</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">North Macedonia</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.3463557</td>
 <td align="right">0.6536443</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">England</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6944465</td>
 <td align="right">0.3055535</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Croatia</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.4123179</td>
 <td align="right">0.5876821</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Czech Republic</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.3024118</td>
 <td align="right">0.6975882</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Scotland</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.2647692</td>
 <td align="right">0.7352308</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Spain</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.7694052</td>
 <td align="right">0.2305948</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Sweden</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.4151998</td>
 <td align="right">0.5848002</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Poland</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.4191363</td>
 <td align="right">0.5808637</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.2109408</td>
 <td align="right">0.7890592</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.7004117</td>
 <td align="right">0.2995883</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6803271</td>
 <td align="right">0.3196729</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6182302</td>
 <td align="right">0.3817698</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Switzerland</td>
 <td align="left">Knockout</td>
 <td align="right">0.2351637</td>
 <td align="right">0.7648363</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Denmark</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.3763764</td>
 <td align="right">0.6236236</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Russia</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.2321079</td>
 <td align="right">0.7678921</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Finland</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.0872543</td>
 <td align="right">0.9127457</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Netherlands</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.6810831</td>
 <td align="right">0.3189169</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Ukraine</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.3735401</td>
 <td align="right">0.6264599</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Austria</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.3697465</td>
 <td align="right">0.6302535</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">North Macedonia</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.1354143</td>
 <td align="right">0.8645857</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">England</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.4018352</td>
 <td align="right">0.5981648</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Croatia</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.1717598</td>
 <td align="right">0.8282402</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Czech Republic</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.1135830</td>
 <td align="right">0.8864170</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Scotland</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.0962033</td>
 <td align="right">0.9037967</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Spain</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.4965353</td>
 <td align="right">0.5034647</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.1734566</td>
 <td align="right">0.8265434</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.1757901</td>
 <td align="right">0.8242099</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.0732315</td>
 <td align="right">0.9267685</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.4086484</td>
 <td align="right">0.5913516</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.3861466</td>
 <td align="right">0.6138534</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.3237105</td>
 <td align="right">0.6762895</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Belgium</td>
 <td align="left">Knockout</td>
 <td align="right">0.0833105</td>
 <td align="right">0.9166895</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Russia</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.3337018</td>
 <td align="right">0.6662982</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Finland</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.1367355</td>
 <td align="right">0.8632645</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Netherlands</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.7796642</td>
 <td align="right">0.2203358</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Ukraine</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.4969745</td>
 <td align="right">0.5030255</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Austria</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.4929137</td>
 <td align="right">0.5070863</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">North Macedonia</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.2060414</td>
 <td align="right">0.7939586</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">England</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.5267576</td>
 <td align="right">0.4732424</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Croatia</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.2557362</td>
 <td align="right">0.7442638</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Czech Republic</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.1751301</td>
 <td align="right">0.8248699</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Scotland</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.1499257</td>
 <td align="right">0.8500743</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Spain</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.6203651</td>
 <td align="right">0.3796349</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.2580041</td>
 <td align="right">0.7419959</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.2611157</td>
 <td align="right">0.7388843</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.1157690</td>
 <td align="right">0.8842310</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.5337988</td>
 <td align="right">0.4662012</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.5103530</td>
 <td align="right">0.4896470</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.4423045</td>
 <td align="right">0.5576955</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Denmark</td>
 <td align="left">Knockout</td>
 <td align="right">0.1308758</td>
 <td align="right">0.8691242</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Finland</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.2402730</td>
 <td align="right">0.7597270</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Netherlands</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8760126</td>
 <td align="right">0.1239874</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Ukraine</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.6636020</td>
 <td align="right">0.3363980</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Austria</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.6599659</td>
 <td align="right">0.3400341</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">North Macedonia</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.3413093</td>
 <td align="right">0.6586907</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">England</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.6896797</td>
 <td align="right">0.3103203</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Croatia</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.4069087</td>
 <td align="right">0.5930913</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Czech Republic</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.2977141</td>
 <td align="right">0.7022859</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Scotland</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.2604378</td>
 <td align="right">0.7395622</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Spain</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.7654127</td>
 <td align="right">0.2345873</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Sweden</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.4097791</td>
 <td align="right">0.5902209</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Poland</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.4137006</td>
 <td align="right">0.5862994</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.2072418</td>
 <td align="right">0.7927582</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.6956972</td>
 <td align="right">0.3043028</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.6754430</td>
 <td align="right">0.3245570</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.6129371</td>
 <td align="right">0.3870629</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Russia</td>
 <td align="left">Knockout</td>
 <td align="right">0.2311644</td>
 <td align="right">0.7688356</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Netherlands</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.9571553</td>
 <td align="right">0.0428447</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Ukraine</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8618297</td>
 <td align="right">0.1381703</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Austria</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8598839</td>
 <td align="right">0.1401161</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">North Macedonia</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6209820</td>
 <td align="right">0.3790180</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">England</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8754254</td>
 <td align="right">0.1245746</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Croatia</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6844770</td>
 <td align="right">0.3155230</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Czech Republic</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.5727246</td>
 <td align="right">0.4272754</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Scotland</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.5268464</td>
 <td align="right">0.4731536</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Spain</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.9116356</td>
 <td align="right">0.0883644</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Sweden</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6870374</td>
 <td align="right">0.3129626</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Poland</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6905080</td>
 <td align="right">0.3094920</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.4525312</td>
 <td align="right">0.5474688</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8784758</td>
 <td align="right">0.1215242</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8680803</td>
 <td align="right">0.1319197</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8335305</td>
 <td align="right">0.1664695</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Finland</td>
 <td align="left">Knockout</td>
 <td align="right">0.4873615</td>
 <td align="right">0.5126385</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Ukraine</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.2182638</td>
 <td align="right">0.7817362</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Austria</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.2155047</td>
 <td align="right">0.7844953</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">North Macedonia</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.0683277</td>
 <td align="right">0.9316723</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">England</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.2392896</td>
 <td align="right">0.7607104</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Croatia</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.0885104</td>
 <td align="right">0.9114896</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Czech Republic</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.0566039</td>
 <td align="right">0.9433961</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Scotland</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.0474758</td>
 <td align="right">0.9525242</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Spain</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.3159142</td>
 <td align="right">0.6840858</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.0894736</td>
 <td align="right">0.9105264</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.0908014</td>
 <td align="right">0.9091986</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.0356800</td>
 <td align="right">0.9643200</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.2444733</td>
 <td align="right">0.7555267</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.2275332</td>
 <td align="right">0.7724668</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.1830938</td>
 <td align="right">0.8169062</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Netherlands</td>
 <td align="left">Knockout</td>
 <td align="right">0.0408184</td>
 <td align="right">0.9591816</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Austria</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.4959388</td>
 <td align="right">0.5040612</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">North Macedonia</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.2080282</td>
 <td align="right">0.7919718</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">England</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.5297735</td>
 <td align="right">0.4702265</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Croatia</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.2580464</td>
 <td align="right">0.7419536</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Czech Republic</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.1768852</td>
 <td align="right">0.8231148</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Scotland</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.1514747</td>
 <td align="right">0.8485253</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Spain</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.6232111</td>
 <td align="right">0.3767889</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.2603277</td>
 <td align="right">0.7396723</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.2634574</td>
 <td align="right">0.7365426</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.1170136</td>
 <td align="right">0.8829864</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.5368092</td>
 <td align="right">0.4631908</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.5133768</td>
 <td align="right">0.4866232</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.4452918</td>
 <td align="right">0.5547082</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Ukraine</td>
 <td align="left">Knockout</td>
 <td align="right">0.1322585</td>
 <td align="right">0.8677415</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">North Macedonia</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.2107173</td>
 <td align="right">0.7892827</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">England</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.5338183</td>
 <td align="right">0.4661817</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Croatia</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.2611689</td>
 <td align="right">0.7388311</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Czech Republic</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.1792629</td>
 <td align="right">0.8207371</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Scotland</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.1535745</td>
 <td align="right">0.8464255</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Spain</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.6270180</td>
 <td align="right">0.3729820</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Sweden</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.2634680</td>
 <td align="right">0.7365320</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Poland</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.2666218</td>
 <td align="right">0.7333782</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.1187026</td>
 <td align="right">0.8812974</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.5408460</td>
 <td align="right">0.4591540</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.5174342</td>
 <td align="right">0.4825658</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.4493079</td>
 <td align="right">0.5506921</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Austria</td>
 <td align="left">Knockout</td>
 <td align="right">0.1341341</td>
 <td align="right">0.8658659</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">England</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8109335</td>
 <td align="right">0.1890665</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Croatia</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.5697191</td>
 <td align="right">0.4302809</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Czech Republic</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.4499823</td>
 <td align="right">0.5500177</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Scotland</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.4046254</td>
 <td align="right">0.5953746</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Spain</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8629549</td>
 <td align="right">0.1370451</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Sweden</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.5726292</td>
 <td align="right">0.4273708</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Poland</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.5765867</td>
 <td align="right">0.4234133</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.3353319</td>
 <td align="right">0.6646681</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8152296</td>
 <td align="right">0.1847704</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8006517</td>
 <td align="right">0.1993483</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.7534578</td>
 <td align="right">0.2465422</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">North Macedonia</td>
 <td align="left">Knockout</td>
 <td align="right">0.3671918</td>
 <td align="right">0.6328082</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Croatia</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.2358835</td>
 <td align="right">0.7641165</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Czech Republic</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.1601881</td>
 <td align="right">0.8398119</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Scotland</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.1367776</td>
 <td align="right">0.8632224</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Spain</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.5948291</td>
 <td align="right">0.4051709</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.2380318</td>
 <td align="right">0.7619682</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.2409807</td>
 <td align="right">0.7590193</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.1052454</td>
 <td align="right">0.8947546</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.5070668</td>
 <td align="right">0.4929332</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.4835772</td>
 <td align="right">0.5164228</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.4160652</td>
 <td align="right">0.5839348</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">England</td>
 <td align="left">Knockout</td>
 <td align="right">0.1191640</td>
 <td align="right">0.8808360</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Czech Republic</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.3819104</td>
 <td align="right">0.6180896</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Scotland</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.3391836</td>
 <td align="right">0.6608164</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Spain</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8262597</td>
 <td align="right">0.1737403</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.5029703</td>
 <td align="right">0.4970297</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.5070174</td>
 <td align="right">0.4929826</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.2759038</td>
 <td align="right">0.7240962</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.7691736</td>
 <td align="right">0.2308264</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.7520671</td>
 <td align="right">0.2479329</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.6977138</td>
 <td align="right">0.3022862</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Croatia</td>
 <td align="left">Knockout</td>
 <td align="right">0.3047058</td>
 <td align="right">0.6952942</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Scotland</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.4537607</td>
 <td align="right">0.5462393</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Spain</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.8850142</td>
 <td align="right">0.1149858</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Sweden</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.6208903</td>
 <td align="right">0.3791097</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Poland</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.6246937</td>
 <td align="right">0.3753063</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.3814438</td>
 <td align="right">0.6185562</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.8435785</td>
 <td align="right">0.1564215</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.8307729</td>
 <td align="right">0.1692271</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.7888291</td>
 <td align="right">0.2111709</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Czech Republic</td>
 <td align="left">Knockout</td>
 <td align="right">0.4149496</td>
 <td align="right">0.5850504</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Spain</td>
 <td align="left">Scotland</td>
 <td align="left">Knockout</td>
 <td align="right">0.9025849</td>
 <td align="right">0.0974151</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Sweden</td>
 <td align="left">Scotland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6634743</td>
 <td align="right">0.3365257</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Poland</td>
 <td align="left">Scotland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6670796</td>
 <td align="right">0.3329204</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">Scotland</td>
 <td align="left">Knockout</td>
 <td align="right">0.4260617</td>
 <td align="right">0.5739383</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Scotland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8665260</td>
 <td align="right">0.1334740</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Scotland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8552767</td>
 <td align="right">0.1447233</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Scotland</td>
 <td align="left">Knockout</td>
 <td align="right">0.8180764</td>
 <td align="right">0.1819236</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Scotland</td>
 <td align="left">Knockout</td>
 <td align="right">0.4605686</td>
 <td align="right">0.5394314</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Sweden</td>
 <td align="left">Spain</td>
 <td align="left">Knockout</td>
 <td align="right">0.1754526</td>
 <td align="right">0.8245474</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Spain</td>
 <td align="left">Knockout</td>
 <td align="right">0.1778071</td>
 <td align="right">0.8221929</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Spain</td>
 <td align="left">Knockout</td>
 <td align="right">0.0741777</td>
 <td align="right">0.9258223</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Spain</td>
 <td align="left">Knockout</td>
 <td align="right">0.4120018</td>
 <td align="right">0.5879982</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Spain</td>
 <td align="left">Knockout</td>
 <td align="right">0.3894368</td>
 <td align="right">0.6105632</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Spain</td>
 <td align="left">Knockout</td>
 <td align="right">0.3267519</td>
 <td align="right">0.6732481</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Spain</td>
 <td align="left">Knockout</td>
 <td align="right">0.0843750</td>
 <td align="right">0.9156250</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Poland</td>
 <td align="left">Sweden</td>
 <td align="left">Knockout</td>
 <td align="right">0.5040475</td>
 <td align="right">0.4959525</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Slovakia</td>
 <td align="left">Sweden</td>
 <td align="left">Knockout</td>
 <td align="right">0.2735365</td>
 <td align="right">0.7264635</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Germany</td>
 <td align="left">Sweden</td>
 <td align="left">Knockout</td>
 <td align="right">0.7670574</td>
 <td align="right">0.2329426</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Sweden</td>
 <td align="left">Knockout</td>
 <td align="right">0.7498450</td>
 <td align="right">0.2501550</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Sweden</td>
 <td align="left">Knockout</td>
 <td align="right">0.6952020</td>
 <td align="right">0.3047980</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Sweden</td>
 <td align="left">Knockout</td>
 <td align="right">0.3021945</td>
 <td align="right">0.6978055</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Slovakia</td>
 <td align="left">Poland</td>
 <td align="left">Knockout</td>
 <td align="right">0.2703310</td>
 <td align="right">0.7296690</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Poland</td>
 <td align="left">Knockout</td>
 <td align="right">0.7641520</td>
 <td align="right">0.2358480</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Poland</td>
 <td align="left">Knockout</td>
 <td align="right">0.7467958</td>
 <td align="right">0.2532042</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Poland</td>
 <td align="left">Knockout</td>
 <td align="right">0.6917606</td>
 <td align="right">0.3082394</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Poland</td>
 <td align="left">Knockout</td>
 <td align="right">0.2987914</td>
 <td align="right">0.7012086</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Germany</td>
 <td align="left">Slovakia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8973871</td>
 <td align="right">0.1026129</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">France</td>
 <td align="left">Slovakia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8884038</td>
 <td align="right">0.1115962</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Portugal</td>
 <td align="left">Slovakia</td>
 <td align="left">Knockout</td>
 <td align="right">0.8583079</td>
 <td align="right">0.1416921</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Slovakia</td>
 <td align="left">Knockout</td>
 <td align="right">0.5349141</td>
 <td align="right">0.4650859</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">France</td>
 <td align="left">Germany</td>
 <td align="left">Knockout</td>
 <td align="right">0.4765214</td>
 <td align="right">0.5234786</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">Germany</td>
 <td align="left">Knockout</td>
 <td align="right">0.4092138</td>
 <td align="right">0.5907862</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">Germany</td>
 <td align="left">Knockout</td>
 <td align="right">0.1162286</td>
 <td align="right">0.8837714</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Portugal</td>
 <td align="left">France</td>
 <td align="left">Knockout</td>
 <td align="right">0.4321137</td>
 <td align="right">0.5678863</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hungary</td>
 <td align="left">France</td>
 <td align="left">Knockout</td>
 <td align="right">0.1262362</td>
 <td align="right">0.8737638</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Hungary</td>
 <td align="left">Portugal</td>
 <td align="left">Knockout</td>
 <td align="right">0.1595711</td>
 <td align="right">0.8404289</td>
-<td align="right">0.0000000</td>
+<td align="right">NA</td>
 </tr>
 </tbody>
 </table>
