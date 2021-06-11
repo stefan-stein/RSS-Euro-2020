@@ -21,7 +21,19 @@ library(tidyverse)
 library(igraph)
 ```
 
-Rescale odds so that the probabilities add to one.
+We will be applying a Bradley-Terry model in the sense that we assume that the probability that a team $i$ beats a team $j$ is
+\[ 
+p_{ij} = \frac{\pi_i}{\pi_i + \pi_j},
+\]
+where $\pi_i$ is the strength of team $i$.
+
+In the first part we use the group stage match probabilities to estimate intra-group strengths $s_i$ by noting that 
+\[
+\log(p_{ij} / p_{ji}) = \log(s_i / s_j) = r_i - r_j,
+\]
+where $r_i = log(s_i)$.
+
+We begin by rescaling the odds so that the implied match outcome probabilities add to one.
 
 ```{r}
 df <- read_csv("Group odds 10Jun (inc Group).csv") %>%
