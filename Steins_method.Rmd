@@ -51,7 +51,7 @@ df <- read_csv("Group odds 10Jun (inc Group).csv") %>%
 df
 ```
 
-Create adjacency matrix.
+We then estimate the intra-group strength parameters by linear regression, starting with constructing an appropriate adjacency matrix,
 
 ```{r}
 makeX_lm <- function(df){
@@ -69,7 +69,7 @@ makeX_lm <- function(df){
 df$X <- makeX_lm(df)
 ```
 
-Fit linear model.
+then fitting the linear model.
 
 ```{r}
 lmfit_group <- lm(logit_p_ij ~ -1 + X, data = df)
@@ -80,20 +80,20 @@ r
 s <- exp(r)
 ```
 
-Scale the Group probabilities.
+We now need to recognise that different groups will be of different strengths and so these intra-group strengths need scaling so they can be used to compare teams from different groups.
 
 Under Bradley--Terry, the probability of $i$ winning the final, given $i$ has made it to the final, is
 \[
-q_{io} = \pi_i / (\pi_i + \pi_o)
+q_{io} = \pi_i / (\pi_i + \pi_o),
 \]
 where $\pi_i$ is the strength of team $i$ and $\pi_o$ is the strength of the final opponent.
-The opponent strength $\pi_o$ is assumed to be the same for all teams (since there are so many permutations of reaching the final), so
+The opponent strength $\pi_o$ is assumed to be the same for all teams, so
 \begin{equation}
 \text{logit}(q_{io}) = \lambda_i - \lambda_o
 \end{equation}
 where $\lambda_i = \log \pi_i$.
 We have the intra-group strengths $s_i$, but we do not know the relative strengths of the groups.
-Suppose group $G$ has strength $\gamma_G$ such that $s_i = \gamma_G(i) \pi_i$ where $G(i)$ is $i$'s group.
+Suppose group $G$ has strength $\gamma_G$ such that $s_i = \gamma_{G(i)} \pi_i$ where $G(i)$ is $i$'s group.
 Then
 \begin{equation}
 \lambda_i = \log \pi_i = \log s_i - \log \gamma_{G(i)} = r_i - \lambda_{G(i)}
@@ -101,7 +101,7 @@ Then
 where $\lambda_{G(i)} = \log \gamma_{G(i)}$.
 So combining (1) and (2) we have
 \[
-r_i - \text{logit}(q_io) = \lambda_{G(i)} + \lambda_o.
+r_i - \text{logit}(q_{io}) = \lambda_{G(i)} + \lambda_o.
 \]
 So we estimate $\lambda_o$ and the $\lambda_G$ by regressing against $r_i - \text{logit}(q_{io})$.
 
