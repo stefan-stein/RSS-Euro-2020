@@ -39,7 +39,7 @@ df$X <- makeX_lm(df)
 
 # Fit linear model ---------------------------------------
 
-lmfit <- lm(logit_p_ij ~ -1 + X, data = df)
+lm_fit <- lm(logit_p_ij ~ -1 + X, data = df)
 
 r <- coef(lm_fit)
 r[is.na(r)] <- 0
@@ -90,8 +90,8 @@ s_A # these match what we got from lmfit with NAs subbed to 0 and from previous 
 
 # ----------------------------------------------------------------
 
-probs <- outer(r, r, function(x,y){plogis(x - y)})
-dimnames(probs) <- list(i = colnames(df$X), j = colnames(df$X))
+r <- setNames(r, colnames(df$X))
+probs <- plogis(outer(r, r, '-'))
 probs
 
 ## But these are not the right strengths to be using to calculate these probabilities 
