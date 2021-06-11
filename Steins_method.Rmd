@@ -163,8 +163,18 @@ probs
 Formatting for output
 
 ```{r}
-output <- as.data.frame.table(probs)
-colnames(output) <- c('team1_name', 'team2_name', 'p_team1_win')
+output <- combn(names(lambda), 2) %>%
+  t() %>% as.data.frame() %>%
+  rename(team1_name = V1,
+         team2_name = V2) %>%
+  tidyr::crossing(Group = c('Group', 'Knockout')) %>%
+  left_join(winner %>% select(team1_name = TeamName, g1 = Group)) %>%
+  left_join(winner %>% select(team2_name = TeamName, g2 = Group)) %>%
+  filter(team1_name != team2_name,
+         Group == 'Knockout' | g1 == g2) %>%
+  mutate(Group = ifelse(Group == 'Group', g1, Group)) %>%
+  select(-g1, -g2) %>%
+  arrange(Group)
 output
 ```
 
