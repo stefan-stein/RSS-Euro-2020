@@ -21,7 +21,9 @@ library(tidyverse)
 library(igraph)
 ```
 
-We will be applying a Bradley-Terry model in the sense that we assume that the probability that a team $i$ beats a team $j$ is
+Our aim (partly dictated by only starting the project yesterday) has been to create a decent prediction model from publicly available data in the most parsimonious way possible in terms of the data used and the models employed. The predictions rely on only 134 individual items of data (108 group match odds + 26 outright odds) and two linear regression model fits. 
+
+In order to do this we will be applying a Bradley-Terry model in the sense that we assume that the probability that a team $i$ beats a team $j$ is
 \[ 
 p_{ij} = \frac{\pi_i}{\pi_i + \pi_j},
 \]
