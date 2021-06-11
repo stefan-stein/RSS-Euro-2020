@@ -86,7 +86,7 @@ Under Bradley--Terry, the probability of $i$ winning the final, given $i$ has ma
 \[
 q_{io} = \pi_i / (\pi_i + \pi_o),
 \]
-where $\pi_i$ is the strength of team $i$ and $\pi_o$ is the strength of the final opponent.
+where $\pi_i$ is the strength of team $i$ and $\pi_o$ is the strength of the final opponent, since there are so many permutations by which a final opponent may be determined for all teams.
 The opponent strength $\pi_o$ is assumed to be the same for all teams, so
 \begin{equation}
 \text{logit}(q_{io}) = \lambda_i - \lambda_o
@@ -153,7 +153,7 @@ X
 lmfit_win <- lm(y ~ X)
 ```
 
-Where probability of winning is small, we make an adjustment according to a threshold.
+Where probability of winning is small, we make an adjustment according to a threshold, since the $q_io$ for low probability teams may be highly unreliable.
 
 ```{r}
 cut <- subset(winner, pi_win > 0.01)
