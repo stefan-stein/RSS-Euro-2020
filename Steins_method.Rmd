@@ -139,7 +139,28 @@ for (group in colnames(X)) {
 X
 
 lmfit_win <- lm(y ~ X)
+```
 
+Where probability of winning is small, we make an adjustment according to a threshold.
+
+```{r}
+cut <- subset(winner, pi_win > 0.01)
+
+y2 <- cut$r - qlogis(cut$q_io)
+X2 <- matrix(0,
+            nrow(cut),
+            length(unique(cut$Group)))
+colnames(X2) <- sort(unique(cut$Group))
+rownames(X2) <- cut$TeamName
+for (group in colnames(X2)) {
+  X2[cut$Group == group, group] <- 1
+}
+X2
+
+lmfit_win <- lm(y2 ~ X2) # NOTE: this replaces lmfit_win above
+```
+
+```{r}
 lambda_G <- coef(lmfit_win)
 lambda_G[is.na(lambda_G)] <- 0
 names(lambda_G) <- c("O", "A", "B", "C", "D", "E", "F")
