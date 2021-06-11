@@ -48,16 +48,6 @@ r
 s <- exp(r)
 
 
-# Calc probs ------ leaving code here for now but to be moved -----
-
-r <- setNames(r, colnames(df$X))
-probs <- plogis(outer(r, r, '-'))
-probs
-
-## But these are not the right strengths to be using to calculate these probabilities 
-## because the group probabilities have not been scaled
-
-
 # scale the Group probabilities ----------------------------
 
 # Under Bradley-Terry the probability of i winning the final given i has made it to the final is 
@@ -107,6 +97,18 @@ lambda <- coef(lmfit_win)
 lambda[is.na(lambda)] <- 0
 lambda
 names(lambda) <- c("O","A", "B", "C", "D", "E", "F")
+
+# \lambda_i = r_i - lambda_G(i) ----- Needs completing
+
+
+
+# Calc probs ------Needs completing
+
+# Needs updating with the \lambda_i instead of r_i
+
+r <- setNames(r, colnames(df$X))
+probs <- plogis(outer(r, r, '-'))
+probs
 
 
 
