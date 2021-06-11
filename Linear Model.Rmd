@@ -84,7 +84,7 @@ We have the intra-group strengths $s_i$, but we do not know the relative strengt
 Suppose group $G$ has strength $\gamma_G$ such that $s_i = \gamma_G(i) \pi_i$ where $G(i)$ is $i$'s group.
 Then
 \begin{equation}
-\lambda_i = \log \pi_i = \log s_i - \log \gamma_{G(i)} = r_i - \lambda_{G(i)
+\lambda_i = \log \pi_i = \log s_i - \log \gamma_{G(i)} = r_i - \lambda_{G(i)}
 \end{equation}
 where $\lambda_{G(i)} = \log \gamma_{G(i)}$.
 So combining (1) and (2) we have
@@ -133,7 +133,7 @@ lmfit_win <- lm(y ~ X)
 lambda_G <- coef(lmfit_win)
 lambda_G[is.na(lambda_G)] <- 0
 lambda_G
-names(lambda_G) <- c("O","A", "B", "C", "D", "E", "F")
+names(lambda_G) <- c("O", "A", "B", "C", "D", "E", "F")
 ```
 
 Get the team coefficients $\lambda_i = r_i - \lambda_{G(i)}$
