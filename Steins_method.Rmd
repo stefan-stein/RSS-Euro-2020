@@ -1,0 +1,163 @@
+---
+title: "Stein's method"
+author:
+  - Ian Hamilton
+  - Stefan Stein
+  - David Selby
+date: June 2021
+output:
+  html_document:
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, echo = TRUE)
+```
+
+Libraries.
+
+```{r}
+library(tidyverse)
+library(igraph)
+```
+
+Rescale odds so that the probabilities add to one.
+
+```{r}
+df <- read_csv("Group odds 10Jun (inc Group).csv") %>%
+  rename("odds_1" = "1", "odds_draw" = "X", "odds_2" = "2") %>%
+  mutate(p_ij = 1 / odds_1,
+         p_draw = 1 / odds_draw,
+         p_ji = 1/ odds_2,
+         total_prob = p_ij + p_draw + p_ji) %>%
+  mutate(p_ij = p_ij / total_prob,
+         p_draw = p_draw / total_prob,
+         p_ji = p_ji / total_prob) %>%
+  select(-total_prob) %>%
+  mutate(logit_p_ij = log(p_ij / p_ji))
+
+df
+```
+
+Create adjacency matrix.
+
+```{r}
+makeX_lm <- function(df){
+  X_lm <- matrix(0,
+                 nrow(df),
+                 length(levels(factor(as.character(df$TeamName1)))))
+  colnames(X_lm) <- levels(factor(as.character(df$TeamName1)))
+  for (team in colnames(X_lm)) {
+    X_lm[df$TeamName1 == team, team] <- 1
+    X_lm[df$TeamName2 == team, team] <- -1
+  }
+  return(X_lm)
+}
+
+df$X <- makeX_lm(df)
+```
+
+Fit linear model.
+
+```{r}
+lmfit_group <- lm(logit_p_ij ~ -1 + X, data = df)
+
+r <- coef(lmfit_group)
+r[is.na(r)] <- 0
+r
+s <- exp(r)
+```
+
+Scale the Group probabilities.
+
+Under Bradley--Terry, the probability of $i$ winning the final, given $i$ has made it to the final, is
+\[
+q_{io} = \pi_i / (\pi_i + \pi_o)
+\]
+where $\pi_i$ is the strength of team $i$ and $\pi_o$ is the strength of the final opponent.
+The opponent strength $\pi_o$ is assumed to be the same for all teams (since there are so many permutations of reaching the final), so
+\begin{equation}
+\text{logit}(q_{io}) = \lambda_i - \lambda_o
+\end{equation}
+where $\lambda_i = \log \pi_i$.
+We have the intra-group strengths $s_i$, but we do not know the relative strengths of the groups.
+Suppose group $G$ has strength $\gamma_G$ such that $s_i = \gamma_G(i) \pi_i$ where $G(i)$ is $i$'s group.
+Then
+\begin{equation}
+\lambda_i = \log \pi_i = \log s_i - \log \gamma_{G(i)} = r_i - \lambda_{G(i)}
+\end{equation}
+where $\lambda_{G(i)} = \log \gamma_{G(i)}$.
+So combining (1) and (2) we have
+\[
+r_i - \text{logit}(q_io) = \lambda_{G(i)} + \lambda_o.
+\]
+So we estimate $\lambda_o$ and the $\lambda_G$ by regressing against $r_i - \text{logit}(q_{io})$.
+
+```{r}
+# take tournament win odds and translate to tournament win odds
+
+
+winner <- read_csv("Winner.csv")%>%
+  mutate(p_i = 1 / Odds,
+         total_prob = sum(p_i))%>%
+  mutate(p_i = p_i / total_prob)%>%
+  select(Group, TeamName, p_i)%>%
+  rename("pi_win" = "p_i")%>%
+  left_join(
+    read_csv("making_final.csv")%>%
+      mutate(p_i = 1 / Odds,
+             total_prob = sum(p_i))%>%
+      mutate(p_i = 2*p_i / total_prob)%>%
+      select(TeamName, p_i)%>%
+      rename("pi_final" = "p_i"),
+    by = "TeamName"
+  )%>%
+  # calculate the conditional probability of winning given you make the final
+  mutate(q_io = pi_win / pi_final)%>%
+  left_join(
+    as.data.frame(r)%>%
+      rownames_to_column("TeamName")%>%
+      mutate(TeamName = str_remove(TeamName, "^X")),
+    by = "TeamName"
+  )
+
+
+```
+
+```{r}
+
+y <- winner$r - qlogis(winner$q_io)
+
+X <- matrix(0,
+               nrow(winner),
+               length(levels(factor(as.character(winner$Group)))))
+colnames(X) <- levels(factor(as.character(winner$Group)))
+rownames(X) <- winner$TeamName
+for (group in colnames(X)) {
+  X[winner$Group == group, group] <- 1
+}
+X
+
+lmfit_win <- lm(y ~ X)
+
+lambda_G <- coef(lmfit_win)
+lambda_G[is.na(lambda_G)] <- 0
+lambda_G
+names(lambda_G) <- c("O", "A", "B", "C", "D", "E", "F")
+```
+
+Get the team coefficients $\lambda_i = r_i - \lambda_{G(i)}$
+
+```{r}
+lambda <- setNames(r - lambda_G[winner$Group], winner$TeamName)
+lambda
+```
+
+Then calculate the probabilities from the $\lambda$s
+
+```{r}
+probs <- plogis(outer(lambda, lambda, '-'))
+probs
+```
+
+
