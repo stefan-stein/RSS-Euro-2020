@@ -160,4 +160,11 @@ probs <- plogis(outer(lambda, lambda, '-'))
 probs
 ```
 
+Formatting for output
+
+```{r}
+output <- as.data.frame.table(probs)
+colnames(output) <- c('team1_name', 'team2_name', 'p_team1_win')
+output
+```
 
