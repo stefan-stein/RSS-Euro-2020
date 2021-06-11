@@ -1,6 +1,7 @@
 # Libraries ---------------------------------------------------------------
 library(tidyverse)
 library(igraph)
+library(dplyr)
 
 
 # Re-scale odds so that probabilities add to one --------------------------
@@ -105,5 +106,8 @@ lmfit_win <- lm(y ~ X)
 lambda <- coef(lmfit_win)
 lambda[is.na(lambda)] <- 0
 lambda
+names(lambda) <- c("O","A", "B", "C", "D", "E", "F")
+
+
 
 
