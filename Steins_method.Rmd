@@ -163,8 +163,7 @@ probs
 Formatting for output
 
 ```{r}
-output <- read_csv('submission-template.csv')
-output %>%
+output <- read_csv('submission-template.csv') %>%
   select(-starts_with('p')) %>%
   # Just use the market odds for the group stage
   left_join(df %>% select(Group,
@@ -178,6 +177,15 @@ output %>%
                           team2_name = TeamName1,
                           p_team1_win = p_ji,
                           p_team2_win = p_ij)) %>%
-  filter(Group == 'Knockout' | !is.na(p_draw))
+  filter(Group == 'Knockout' | !is.na(p_draw)) %>%
+  mutate(p_team1_win = ifelse(Group == 'Knockout',
+                              plogis(lambda[team1_name] - lambda[team2_name]),
+                              p_team1_win),
+         p_team2_win = ifelse(Group == 'Knockout',
+                              plogis(lambda[team2_name] - lambda[team1_name]),
+                              p_team2_win),
+         p_draw = ifelse(Group == 'Knockout', 0, p_draw))
+# write.csv(output, 'output.csv')
+output
 ```
 
